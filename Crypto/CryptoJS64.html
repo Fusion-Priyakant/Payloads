@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AES-CBC Encryption and Decryption Using CryptoJS</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.js"></script>
+</head>
+<body>
+    <h1>AES-CBC - CryptoJS</h1>
+    <form id="cryptoForm">
+        <label for="plaintext">Plaintext:</label>
+		<textarea id="plaintext" rows="10" cols="80" name="plaintext"></textarea><br><br>
+        <label for="key">Encryption Key:</label>
+        <input type="text" id="key" name="key" required><br><br>
+        <label for="iv">IV (optional):</label>
+        <input type="text" id="iv" name="iv" ><br><br>
+        <button type="button" onclick="encrypt()">Encrypt</button>
+        <button type="button" onclick="decrypt()">Decrypt</button><br><br>
+        <label for="encrypted">Encrypted:</label>
+        <textarea id="encrypted" rows="10" cols="80" ></textarea><br><br>
+        <label for="decrypted">Decrypted:</label>
+        <textarea id="decrypted" rows="10" cols="80" ></textarea>
+    </form>
+
+    <script>
+			
+		
+		
+        function encrypt() {
+		
+            const plaintext = document.getElementById('plaintext').value;
+			const keyValue = document.getElementById('key').value;
+			const key = CryptoJS.enc.Base64.parse(document.getElementById('key').value);
+			const ivValue = document.getElementById('iv').value;
+			
+			const options = { mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 };
+            if (ivValue != '') {
+                options.iv = CryptoJS.enc.Base64.parse(ivValue);				
+				const encrypted = CryptoJS.AES.encrypt(plaintext, key, options);
+				document.getElementById('encrypted').value = encrypted.toString();
+				return;
+            }
+            const encrypted = CryptoJS.AES.encrypt(plaintext, keyValue,);
+            document.getElementById('encrypted').value = encrypted.toString();
+        }
+
+        function decrypt() {
+            
+			const encryptedText = document.getElementById('encrypted').value;
+			const keyValue = document.getElementById('key').value;
+			const key = CryptoJS.enc.Base64.parse(document.getElementById('key').value);
+			const ivValue = document.getElementById('iv').value;
+			
+            const options = { mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 };
+            if (ivValue != '') {
+                options.iv = CryptoJS.enc.Base64.parse(ivValue);
+				const decrypted = CryptoJS.AES.decrypt(encryptedText, key, options);
+				document.getElementById('decrypted').value = decrypted.toString(CryptoJS.enc.Utf8);
+				return;
+            }
+			console.log(ivValue)
+            const decrypted = CryptoJS.AES.decrypt(encryptedText, keyValue);
+			document.getElementById('decrypted').value = decrypted.toString(CryptoJS.enc.Utf8);
+        }
+    </script>
+</body>
+</html>

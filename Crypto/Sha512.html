@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compute Hash Example</title>
+    <!-- Include CryptoJS library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+
+<h2>Compute Hash</h2>
+
+<!-- Input fields -->
+<label for="data">Input Data:</label><br>
+<textarea id="data" rows="10" cols="100"></textarea><br><br>
+
+<label for="salt">Salt:</label><br>
+<textarea id="salt" rows="2" cols="100"></textarea><br><br>
+
+<label for="output">Output Hash:</label><br>
+<textarea id="output" rows="5" cols="100" readonly></textarea><br><br>
+
+<!-- Button to compute hash -->
+<button onclick="computeAndDisplayHash()">Compute Hash</button>
+
+<script>
+    // Function to compute hash and display it
+    function computeAndDisplayHash() {
+        // Get input data and salt from input fields
+        var data = document.getElementById('data').value;
+        var salt = document.getElementById('salt').value;
+
+        // Calculate hash using computeHash function
+        var hash = computeHash(data, salt);
+
+        // Display hash in output field
+        document.getElementById('output').value = hash;
+    }
+
+    // Define the computeHash function
+    function computeHash(t, s) {
+        // Calculate SHA-512 hash using CryptoJS
+        var u = CryptoJS.SHA512(t + s).toString();
+        // Return the URL encoded hash
+        return encodeURIComponent(u);
+    }
+</script>
+
+</body>
+</html>

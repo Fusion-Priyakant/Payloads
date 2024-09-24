@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AES-CBC Encryption and Decryption Using CryptoJS</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.js"></script>
+</head>
+<body>
+    <h1>AES-CBC - CryptoJS</h1>
+    <form id="cryptoForm">
+        <label for="plaintext">Plaintext:</label>
+        <textarea id="plaintext" rows="10" cols="80" name="plaintext"></textarea><br><br>
+        <label for="key">Encryption Key (hex):</label>
+        <input type="text" id="key" name="key" required><br><br>
+        <button type="button" onclick="encrypt()">Encrypt</button>
+        <button type="button" onclick="decrypt()">Decrypt</button><br><br>
+        <label for="encrypted">Encrypted:</label>
+        <textarea id="encrypted" rows="10" cols="80" ></textarea><br><br>
+        <label for="decrypted">Decrypted:</label>
+        <textarea id="decrypted" rows="10" cols="80" ></textarea>
+    </form>
+
+    <script>
+        var SSOUtils = {
+            getBytesFromHex: function(hex) {
+                var bytes = [];
+                for (var i = 0, l = hex.length; i < l; i += 2) {
+                    bytes.push(parseInt(hex.substr(i, 2), 16));
+                }
+                return bytes;
+            },
+            getBytesFromString: function(str) {
+                var bytes = [];
+                for (var i = 0, l = str.length; i < l; i += 1) {
+                    bytes.push(str.charCodeAt(i));
+                }
+                return bytes;
+            },
+            getDehexStrForm: function(hex) {
+                var bytes = this.getBytesFromHex(hex);
+                return bytes.map(function(item) {
+                    return String.fromCharCode(item);
+                }).join("");
+            },
+            getHexStrForm: function(str) {
+                var bytes = this.getBytesFromString(str);
+                return bytes.map(function(item) {
+                    return (item <= 0xf ? '0' : '') + item.toString(16);
+                }).join("");
+            },
+            getHexString: function(bytes) {
+                return bytes.map(function(item) {
+                    return (item <= 0xf ? '0' : '') + item.toString(16);
+                }).join("");
+            }
+        };
+
+        var SSOCipher = new function () {
+            this.encrypt = function (data, key) {
+                final_key = CryptoJS.enc.Hex.parse(key);
+				key = this.generateKey(final_key);
+                var iv = CryptoJS.enc.Hex.parse("696e666f73797331696e666f73797331");
+                var encryptedData = CryptoJS.AES.encrypt(data, key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+                return CryptoJS.enc.Base64.parse(encryptedData.toString()).toString(CryptoJS.enc.Hex);
+            };
+
+            this.decrypt = function (data, key, isHexReq) {
+                data = CryptoJS.enc.Hex.parse(data).toString(CryptoJS.enc.Base64);
+				final_key = CryptoJS.enc.Hex.parse(key);
+                key = this.generateKey(final_key);
+                var iv = CryptoJS.enc.Hex.parse("696e666f73797331696e666f73797331");
+                var decryptedData = CryptoJS.AES.decrypt(data, key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+                if (isHexReq)
+                    var decryptedText = decryptedData.toString(CryptoJS.enc.Hex);
+                else
+                    var decryptedText = decryptedData.toString(CryptoJS.enc.Utf8);
+                return decryptedText;
+            };
+
+            this.generateKey = function (key) {
+                var hashKey = CryptoJS.SHA512(key).toString(CryptoJS.enc.Hex);
+                var hashKeyBytes = SSOUtils.getBytesFromHex(hashKey);
+                if (hashKeyBytes.length > 16)
+                    hashKeyBytes = hashKeyBytes.slice(0, 16);
+                key = CryptoJS.enc.Hex.parse(SSOUtils.getHexString(hashKeyBytes));
+                return key;
+            };
+        };
+
+        function encrypt() {
+            const plaintext = document.getElementById('plaintext').value;
+            const keyValue = document.getElementById('key').value;
+            const encrypted = SSOCipher.encrypt(plaintext, keyValue);
+            document.getElementById('encrypted').value = encrypted;
+        }
+
+        function decrypt() {
+            const encryptedText = document.getElementById('encrypted').value;
+            const keyValue = document.getElementById('key').value;
+            const isHexReq = false; // Set to true if Hex output is required
+            const decrypted = SSOCipher.decrypt(encryptedText, keyValue, isHexReq);
+            //document.getElementById('decrypted').value = decrypted;
+			document.getElementById('decrypted').value = CryptoJS.enc.Base64.parse(decrypted).toString(CryptoJS.enc.Utf8);
+        }
+    </script>
+</body>
+</html>

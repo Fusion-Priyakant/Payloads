@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compute HMAC-SHA1 Hash Example</title>
+    <!-- Include CryptoJS library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+
+<h2>Compute HMAC-SHA1 Hash</h2>
+
+<!-- Input fields -->
+<label for="data">Input Data:</label><br>
+<textarea id="data" rows="10" cols="100"></textarea><br><br>
+
+<label for="key">Secret Key:</label><br>
+<textarea id="key" rows="2" cols="100" value="4fxp3u8k"></textarea><br><br>
+
+<label for="output">Output Hash (Base64):</label><br>
+<textarea id="output" rows="5" cols="100" readonly></textarea><br><br>
+
+<!-- Button to compute hash -->
+<button onclick="computeAndDisplayHash()">Compute Hash</button>
+
+<script>
+    // Function to compute hash and display it
+    function computeAndDisplayHash() {
+        // Get input data and secret key from input fields
+        var data = document.getElementById('data').value;
+        var key = document.getElementById('key').value;
+
+        // Calculate HMAC-SHA1 hash using computeHash function
+        var hash = computeHash(data, key);
+
+        // Display hash in output field
+        document.getElementById('output').value = hash;
+    }
+
+    // Define the computeHash function
+    function computeHash(message, secretKey) {
+        // Calculate HMAC-SHA1 hash using CryptoJS
+        var hmac = CryptoJS.HmacSHA1(message, secretKey).toString(CryptoJS.enc.Base64);
+        // Return the Base64 encoded hash
+        return hmac;
+    }
+</script>
+
+</body>
+</html>
